@@ -1,0 +1,30 @@
+name: 🔁 CI - Docker Build Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: 🐳 Docker Compose Build
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🛠 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: 📦 Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: 🔍 Docker Compose Build
+        run: docker compose -f docker-compose.yml build
